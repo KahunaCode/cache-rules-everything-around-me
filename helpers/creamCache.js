@@ -1,7 +1,14 @@
 /* jshint esversion: 6 */
 
+const express = require('express');
+const app = express();
+const handlebars = require('express-handlebars');
+
 const redis = require('redis');
 const client = redis.createClient();
+
+app.engine('.hbs', handlebars({extname: '.hbs', defaultLayout: 'main'}));
+app.set('view engine', '.hbs');
 
 client.on('error', (err) =>{
   console.log('error', err);
@@ -33,9 +40,16 @@ function creamCache(req,res,next){
   client.get(req.path, (err, reply) =>{
     console.log(reply);
     if (!reply){
-      //if it doesn't (reply === null) then add that path to the redis db
-      client.set(req.path, '<h1>hello</h1>', redis.print);
-    next();
+      //if it doesn't (reply === null) then render that path to the redis db
+      let htmlString = '';
+
+      app.render('api/index', function(err,html){
+        client.set(req.path, html, redis.print);
+        next();
+      });
+
+    //   client.set(req.path, '<h1>hello</h1>', redis.print);
+    // next();
     }
     else{
       //wait, dont rerender everything...
