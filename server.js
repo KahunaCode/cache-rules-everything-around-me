@@ -3,6 +3,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const handlebars = require('express-handlebars');
+const creamCache = require('./helpers/creamCache');
 
 const { slow } = require('./routes');
 
@@ -14,7 +15,11 @@ app.set('view engine', '.hbs');
 
 app.use(bodyParser.json());
 // server.use(creamCache.init()); /* student implements this */
+app.use(creamCache);
+
 app.use('/slow', slow);
+
+
 
 app.get('/', (req, res) => {
   res.render('index');
