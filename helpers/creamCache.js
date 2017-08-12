@@ -15,3 +15,10 @@ client.on('connect', ()=>{
 //go to redis-cli and type "keys *" and "get food"
 client.set('food', 'sushi', redis.print);
 
+//client get method returns value from "food" key
+client.get('food', (err,reply) =>{
+  console.log("reply is", reply);
+});
+
+//end connection stream
+client.quit();
