@@ -28,15 +28,18 @@ client.on('connect', ()=>{
 function creamCache(req,res,next){
   console.log('hit the cache');
   console.log('path is', req.path);
-  // client.set(req.path, 'hello', redis.print);
 
+  //check if the path exists in our redis db
   client.get(req.path, (err, reply) =>{
     console.log(reply);
     if (!reply){
+      //if it doesn't (reply === null) then add that path to the redis db
       client.set(req.path, '<h1>hello</h1>', redis.print);
     next();
     }
     else{
+      //wait, dont rerender everything...
+      //respond back to requester with the contents of path in redis db
       res.send(reply);
     }
   });
